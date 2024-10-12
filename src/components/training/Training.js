@@ -52,6 +52,10 @@ function Training() {
                 opinion: row['Textos_espanol'],
                 category: row['sdg']
             }));
+            jsonResult.map(opinion => {
+              opinion.category = opinion.category.toString();
+              return opinion
+            })
             setModel({...model, opinions: jsonResult});
         };
 
