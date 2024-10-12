@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Accordion, Form, Button, Modal, Spinner } from "react-bootstrap";
+import { FileUpload } from 'primereact/fileupload';
 import axios from "axios";
+import * as XLSX from 'xlsx';
 
 function Home() {
     const navigate = useNavigate();
@@ -15,9 +17,9 @@ function Home() {
         setFormFields(newFormFields);
     }
 
-    function handleAddField(event) {
+    function handleAddField(idx) {
         const newFormFields = [...formFields];
-        newFormFields.splice(event.target.dataset.id+1, 0, { opinion: "" });
+        newFormFields.splice(idx+1, 0, { opinion: "" });
         setFormFields(newFormFields);
     }
 
@@ -29,13 +31,7 @@ function Home() {
         } else setAlert({ show: true, message: "Debes tener al menos un campo de texto." });
     }
 
-    function handleSubmit(event) {
-        event.preventDefault();
-        if (formFields.some(field => field.opinion === "")) {
-            setAlert({ show: true, message: "Debes llenar todos los campos de texto." });
-            return;
-        }
-        const payload = {model: 1, opinions: formFields.map(field => ({opinion: field.opinion}))};
+    function sendRequest(payload) {
         setLoading(true);
         axios.post("http://localhost:8000/body", payload)
             .then(response => {
@@ -49,18 +45,43 @@ function Home() {
             });
     }
 
+    function handleSubmit(event) {
+        event.preventDefault();
+        if (formFields.some(field => field.opinion === "")) {
+            setAlert({ show: true, message: "Debes llenar todos los campos de texto." });
+            return;
+        }
+        const payload = {model: 1, opinions: formFields.map(field => ({opinion: field.opinion}))};
+        sendRequest(payload);
+    }
+
+    function handleFileUpload(event) {
+        const file = event.files[0];
+        if (file.type !== "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") {
+            setAlert({ show: true, message: "Por favor sube solo archivos en formato .xlsx." });
+            event.options.clear();
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: "array" });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+            const jsonResult = worksheet.map(row => ({
+                opinion: row['Textos_espanol']
+            }));
+            sendRequest({model: 1, opinions: jsonResult});
+            event.options.clear();
+        };
+
+        reader.readAsArrayBuffer(file);
+    }
+
     return (
         <Container>
-            <span className="d-flex justify-content-center mt-4">
-                <img src="img/svg/ods.svg" alt="ODS"/>
-            </span>
-            <p className='fs-2 fw-medium text-dark-emphasis mt-4 text-center'>Clasificador de textos para los ODS</p>
-            <div className="d-flex justify-content-center gap-5">
-                <img src="img/svg/ods3.svg" alt="ODS3" style={{ width: "20%" }} />
-                <img src="img/svg/ods4.svg" alt="ODS3" style={{ width: "20%" }} />
-                <img src="img/svg/ods5.svg" alt="ODS3" style={{ width: "20%" }} />
-            </div>
-            <div className="m-5">
+            <p className='fs-2 fw-medium text-dark-emphasis mt-5 text-center'>Clasificador de textos para los ODS</p>
+            <div className="m-5 mt-3">
                 <Accordion defaultActiveKey="0">
                     <Accordion.Item eventKey="0">
                         <Accordion.Header>Entrada de texto</Accordion.Header>
@@ -73,7 +94,7 @@ function Home() {
                                             <Form.Control as="textarea" rows={3} value={field.opinion} data-id={idx} onChange={handleOpinionChange} />
                                         </Form.Group>
                                         <span className="d-flex flex-column justify-content-end ms-2 gap-2">
-                                            <Button variant="success" onClick={handleAddField} data-id={idx}>Agregar</Button>{' '}
+                                            <Button variant="success" onClick={()=>handleAddField(idx)} data-id={idx}>Agregar</Button>{' '}
                                             <Button variant="outline-danger" data-id={idx} onClick={handleRemoveField}>Eliminar</Button>{' '}
                                         </span>
                                     </div>
@@ -89,7 +110,7 @@ function Home() {
                     <Accordion.Item eventKey="1">
                         <Accordion.Header>Subir Archivo</Accordion.Header>
                         <Accordion.Body>
-                            Test
+                            <FileUpload name="file" accept=".xlsx" customUpload uploadHandler={handleFileUpload} chooseLabel="Seleccionar archivo" uploadLabel="Subir" cancelLabel="Cancelar" emptyTemplate={<p className="m-0">Arrastra y suelta archivos aquí para subirlos</p>} />
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
