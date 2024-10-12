@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Container, Accordion, Form, Button, Card, ListGroup, Modal, Spinner } from "react-bootstrap";
 import { FileUpload } from 'primereact/fileupload';
+import { Fade } from "react-awesome-reveal";
 import axios from "axios";
 import * as XLSX from 'xlsx';
 
@@ -88,96 +89,98 @@ function Home() {
     }
 
     return (
-        <Container>
-            <p className='fs-2 fw-medium text-dark-emphasis mt-5 text-center'>Clasificador de textos para los ODS</p>
-            <div className="m-5 mt-3">
-                <Accordion defaultActiveKey="0">
-                    <Accordion.Item eventKey="0">
-                        <Accordion.Header>Entrada de texto</Accordion.Header>
-                        <Accordion.Body>
-                            <Form onSubmit={handleSubmit}>
-                                { formFields.map((field, idx) => (
-                                    <div className="d-flex justify-content-between mb-3" key={idx}>
-                                        <Form.Group className="w-100" controlId="textForm.ControlTextarea">
-                                            <Form.Label>Texto a clasificar</Form.Label>
-                                            <Form.Control as="textarea" rows={3} value={field.opinion} data-id={idx} onChange={handleOpinionChange} />
-                                        </Form.Group>
-                                        <span className="d-flex flex-column justify-content-end ms-2 gap-2">
-                                            <Button variant="success" onClick={()=>handleAddField(idx)} data-id={idx}>Agregar</Button>{' '}
-                                            <Button variant="outline-danger" data-id={idx} onClick={handleRemoveField}>Eliminar</Button>{' '}
-                                        </span>
-                                    </div>
-                                ))}
-                                <span className="d-flex justify-content-end">
-                                    <Button variant="primary" type="submit">
-                                        Enviar
-                                    </Button>
-                                </span>
-                            </Form>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="1">
-                        <Accordion.Header>Subir Archivo</Accordion.Header>
-                        <Accordion.Body>
-                            <FileUpload name="file" accept=".xlsx" customUpload uploadHandler={handleFileUpload} chooseLabel="Seleccionar archivo" uploadLabel="Subir" cancelLabel="Cancelar" emptyTemplate={<p className="m-0">Arrastra y suelta archivos aquí para subirlos</p>} />
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="2">
-                        <Accordion.Header>Modelo</Accordion.Header>
-                        <Accordion.Body>
-                            <div className="d-flex justify-content-between px-5 gap-5">
-                                <Form className="mb-3 w-100">
-                                    <Form.Group controlId="sourceModel">
-                                        <Form.Label>Modelo</Form.Label>
-                                        <Form.Select aria-label="Modelo fuente" value={model.name} onChange={(event)=>{setModel(models.find(m => m.name === event.target.value))}}>
-                                            {models.map((model, index) => (
-                                                <option key={index} value={model.name}>{model.name}</option>
-                                            ))}
-                                        </Form.Select>
-                                        <Form.Text className="text-muted">
-                                            Selecciona el modelo que deseas utilizar.
-                                        </Form.Text>
-                                    </Form.Group>
+        <Fade direction="left" delay={500}>
+            <Container>
+                <p className='fs-2 fw-medium text-dark-emphasis mt-5 text-center'>Clasificador de textos para los ODS</p>
+                <div className="m-5 mt-3">
+                    <Accordion defaultActiveKey="0">
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>Entrada de texto</Accordion.Header>
+                            <Accordion.Body>
+                                <Form onSubmit={handleSubmit}>
+                                    { formFields.map((field, idx) => (
+                                        <div className="d-flex justify-content-between mb-3" key={idx}>
+                                            <Form.Group className="w-100" controlId="textForm.ControlTextarea">
+                                                <Form.Label>Texto a clasificar</Form.Label>
+                                                <Form.Control as="textarea" rows={3} value={field.opinion} data-id={idx} onChange={handleOpinionChange} />
+                                            </Form.Group>
+                                            <span className="d-flex flex-column justify-content-end ms-2 gap-2">
+                                                <Button variant="success" onClick={()=>handleAddField(idx)} data-id={idx}>Agregar</Button>{' '}
+                                                <Button variant="outline-danger" data-id={idx} onClick={handleRemoveField}>Eliminar</Button>{' '}
+                                            </span>
+                                        </div>
+                                    ))}
+                                    <span className="d-flex justify-content-end">
+                                        <Button variant="primary" type="submit">
+                                            Enviar
+                                        </Button>
+                                    </span>
                                 </Form>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        <Accordion.Item eventKey="1">
+                            <Accordion.Header>Subir Archivo</Accordion.Header>
+                            <Accordion.Body>
+                                <FileUpload name="file" accept=".xlsx" customUpload uploadHandler={handleFileUpload} chooseLabel="Seleccionar archivo" uploadLabel="Subir" cancelLabel="Cancelar" emptyTemplate={<p className="m-0">Arrastra y suelta archivos aquí para subirlos</p>} />
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        <Accordion.Item eventKey="2">
+                            <Accordion.Header>Modelo</Accordion.Header>
+                            <Accordion.Body>
+                                <div className="d-flex justify-content-between px-5 gap-5">
+                                    <Form className="mb-3 w-100">
+                                        <Form.Group controlId="sourceModel">
+                                            <Form.Label>Modelo</Form.Label>
+                                            <Form.Select aria-label="Modelo fuente" value={model.name} onChange={(event)=>{setModel(models.find(m => m.name === event.target.value))}}>
+                                                {models.map((model, index) => (
+                                                    <option key={index} value={model.name}>{model.name}</option>
+                                                ))}
+                                            </Form.Select>
+                                            <Form.Text className="text-muted">
+                                                Selecciona el modelo que deseas utilizar.
+                                            </Form.Text>
+                                        </Form.Group>
+                                    </Form>
 
-                                <Card style={{ width: '18rem' }}>
-                                    <div className="d-flex justify-content-center">
-                                        <Card.Img variant="top" src="img/svg/model.svg" style={{ width: "10rem" }} />
-                                    </div>
-                                    <Card.Body>
-                                        <Card.Title>{model.name}</Card.Title>
-                                        <p className="text-center">Métricas</p>
-                                        <ListGroup className="list-group-flush">
-                                            <ListGroup.Item>Precisión: {model.precision}</ListGroup.Item>
-                                            <ListGroup.Item>Recall: {model.recall}</ListGroup.Item>
-                                            <ListGroup.Item>F1 Score: {model.f1}</ListGroup.Item>
-                                        </ListGroup>
-                                    </Card.Body>
-                                </Card>
-                            </div>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                </Accordion>
-            </div>
-            <Modal show={alert.show} onHide={()=>setAlert({show:false,message:""})}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Operación Inválida</Modal.Title>
-                </Modal.Header>
-                    <Modal.Body>{ alert.message }</Modal.Body>
-                <Modal.Footer>
-                <Button variant="outline-danger" onClick={()=>setAlert({show:false,message:""})}>
-                    Cerrar
-                </Button>
-                </Modal.Footer>
-            </Modal>
-            {loading && (
-                <div className="gap-2 position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center" style={{ zIndex: 1050 }}>
-                    <Spinner animation="grow" variant="light" style={{ animationDelay: '0s' }} />
-                    <Spinner animation="grow" variant="light" style={{ animationDelay: '0.1s' }} />
-                    <Spinner animation="grow" variant="light" style={{ animationDelay: '0.2s' }} />
+                                    <Card style={{ width: '18rem' }}>
+                                        <div className="d-flex justify-content-center">
+                                            <Card.Img variant="top" src="img/svg/model.svg" style={{ width: "10rem" }} />
+                                        </div>
+                                        <Card.Body>
+                                            <Card.Title>{model.name}</Card.Title>
+                                            <p className="text-center">Métricas</p>
+                                            <ListGroup className="list-group-flush">
+                                                <ListGroup.Item>Precisión: {model.precision}</ListGroup.Item>
+                                                <ListGroup.Item>Recall: {model.recall}</ListGroup.Item>
+                                                <ListGroup.Item>F1 Score: {model.f1}</ListGroup.Item>
+                                            </ListGroup>
+                                        </Card.Body>
+                                    </Card>
+                                </div>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                    </Accordion>
                 </div>
-            )}
-        </Container>
+                <Modal show={alert.show} onHide={()=>setAlert({show:false,message:""})}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Operación Inválida</Modal.Title>
+                    </Modal.Header>
+                        <Modal.Body>{ alert.message }</Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="outline-danger" onClick={()=>setAlert({show:false,message:""})}>
+                        Cerrar
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
+                {loading && (
+                    <div className="gap-2 position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-75 d-flex justify-content-center align-items-center" style={{ zIndex: 1050 }}>
+                        <Spinner animation="grow" variant="light" style={{ animationDelay: '0s' }} />
+                        <Spinner animation="grow" variant="light" style={{ animationDelay: '0.1s' }} />
+                        <Spinner animation="grow" variant="light" style={{ animationDelay: '0.2s' }} />
+                    </div>
+                )}
+            </Container>
+        </Fade>
     );
 }
 
