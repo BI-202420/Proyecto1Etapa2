@@ -23,7 +23,7 @@ function Results() {
 
     function downloadResults() {
         const worksheetData = [
-            ['Opinión', 'Clasificación', 'Probabilidad'], // Header
+            ['Opinión', 'Clasificación', 'Probabilidad'],
             ...data.map(row => [row.opinion, row.prediction, row.probability])
         ];
 
@@ -47,7 +47,7 @@ function Results() {
                 <thead>
                     <tr>
                         <th style={{ width: '70%' }}>Opinión</th>
-                        <th>Clasificación</th>
+                        <th style={{ width: '15%' }}>Clasificación</th>
                         <th>Probabilidad</th>
                     </tr>
                 </thead>
@@ -60,7 +60,7 @@ function Results() {
                                     <span>...</span>
                                 ) : (
                                     <div className="d-flex justify-content-center align-items-center">
-                                        <img src={`img/svg/ods${row.prediction}.svg`} alt={`ODS${row.prediction}`} style={{ maxWidth: "50%", height: "auto" }} />
+                                        <img src={`img/svg/ods${row.prediction}.svg`} alt={`ODS${row.prediction}`} style={{ maxWidth: "90%", height: "auto" }} />
                                     </div>
                                 )}
                             </td>
@@ -68,10 +68,26 @@ function Results() {
                                 {row.probability === "..." ? (
                                     <span>...</span>
                                 ) : (
-                                    <>
-                                    <ProgressBar style={{ height: "20px" }} now={parseFloat(row.probability) * 100} />
-                                    <p className="text-center">{`${(parseFloat(row.probability) * 100).toFixed(2)}%`}</p>
-                                    </>
+                                    <div>
+                                        {row.probability.map((prob, idx) => (
+                                            <div className="d-flex align-items-center mb-2" key={idx}>
+                                                <span className="me-2">
+                                                    <ProgressBar style={{ height: "20px", width: "200px" }} now={parseFloat(prob) * 100} />
+                                                    <p className="text-center">{`${(parseFloat(prob) * 100).toFixed(2)}%`}</p>
+                                                </span>
+                                                <span
+                                                    className="mb-4"
+                                                    style={{
+                                                        width: "20px",
+                                                        height: "20px",
+                                                        backgroundColor: idx===0 ? "#4c9f38" : idx===1 ? "#c5192d" : "#ff3a21",
+                                                        display: "inline-block",
+                                                        marginLeft: "10px"
+                                                    }}
+                                                ></span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
                             </td>
                         </tr>

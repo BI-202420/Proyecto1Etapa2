@@ -50,12 +50,8 @@ function Training() {
             const worksheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
             const jsonResult = worksheet.map(row => ({
                 opinion: row['Textos_espanol'],
-                category: row['sdg']
+                category: row['sdg'].toString()
             }));
-            jsonResult.map(opinion => {
-              opinion.category = opinion.category.toString();
-              return opinion
-            })
             setModel({...model, opinions: jsonResult});
         };
 
@@ -178,7 +174,7 @@ function Training() {
             </div>
             <Modal show={alert.show} onHide={handleCloseAlert}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Operación Inválida</Modal.Title>
+                    <Modal.Title>Operación {alert.success?"Exitosa":" Inválida"}</Modal.Title>
                 </Modal.Header>
                     <Modal.Body>{ alert.message }</Modal.Body>
                 <Modal.Footer>
