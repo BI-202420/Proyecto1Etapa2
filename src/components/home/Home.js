@@ -129,7 +129,7 @@ function Home() {
                                 <Form className="mb-3 w-100">
                                     <Form.Group controlId="sourceModel">
                                         <Form.Label>Modelo</Form.Label>
-                                        <Form.Select aria-label="Modelo fuente" value={model.source} onChange={(event)=>{setModel({...model, source: event.target.value})}}>
+                                        <Form.Select aria-label="Modelo fuente" value={model.name} onChange={(event)=>{setModel(models.find(m => m.name === event.target.value))}}>
                                             {models.map((model, index) => (
                                                 <option key={index} value={model.name}>{model.name}</option>
                                             ))}
@@ -145,7 +145,7 @@ function Home() {
                                         <Card.Img variant="top" src="img/svg/model.svg" style={{ width: "10rem" }} />
                                     </div>
                                     <Card.Body>
-                                        <Card.Title>{model.source}</Card.Title>
+                                        <Card.Title>{model.name}</Card.Title>
                                         <p className="text-center">Métricas</p>
                                         <ListGroup className="list-group-flush">
                                             <ListGroup.Item>Precisión: {model.precision}</ListGroup.Item>
