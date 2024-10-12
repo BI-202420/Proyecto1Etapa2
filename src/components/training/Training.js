@@ -22,7 +22,7 @@ function Training() {
 
     function sendRequest(payload) {
         setLoading(true);
-        axios.post("http://localhost:8000/training", payload)
+        axios.post("http://localhost:8000/fit", payload)
             .then(response => {
                 setLoading(false);
                 setAlert({ show: true, message: "Modelo reentrenado exitosamente.", success: true });

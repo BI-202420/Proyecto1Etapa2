@@ -42,7 +42,7 @@ function Home() {
 
     function sendRequest(payload) {
         setLoading(true);
-        axios.post("http://localhost:8000/body", payload)
+        axios.post("http://localhost:8000/transform", payload)
             .then(response => {
                 setLoading(false);
                 navigate("/results", { state: { data: response.data } });
