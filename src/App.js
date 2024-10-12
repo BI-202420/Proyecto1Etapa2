@@ -1,13 +1,14 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Navbar, Container } from 'react-bootstrap';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { Navbar, Container, Button } from 'react-bootstrap';
 import Home from './components/home/Home';
 import Results from './components/results/Results';
+import Training from './components/training/Training';
 import './App.css';
 
 function App() {
   return (
-    <>
-      <Navbar className="bg-body-tertiary">
+    <BrowserRouter>
+      <Navbar expand="lg" className="bg-body-tertiary">
         <Container>
           <Navbar.Brand href="/" className='d-flex gap-3'>
             <img
@@ -15,13 +16,24 @@ function App() {
               src="img/svg/logo.svg"
               height={80}
               className="d-inline-block align-top"
-            />{' '}
-            <div className='d-flex align-items-center'>
-              <span className='fs-1 fw-medium text-dark-emphasis'>Fondo de Población de las Naciones Unidas</span>
-            </div>
+            />{' '}            
           </Navbar.Brand>
+          <Navbar.Toggle aria-controls="navbarScroll" />
+          <Navbar.Collapse id="navbarScroll">
+            <div className='d-flex flex-column flex-lg-row align-items-center justify-content-between w-100'>
+              <Link to="/" style={{ textDecoration: 'none' }}>
+                <span className='fs-1 fw-medium text-dark-emphasis text-center mb-3 mb-lg-0'>
+                  Fondo de Población de las Naciones Unidas
+                </span>
+              </Link>
+              <Link to="/training">
+                <Button variant="outline-success" className="mt-2 mt-lg-0">Reentrenar</Button>
+              </Link>
+            </div>
+          </Navbar.Collapse>
         </Container>
       </Navbar>
+      
       <Container>
         <span className="d-flex justify-content-center mt-4">
           <img src="img/svg/ods.svg" alt="ODS"/>
@@ -32,13 +44,13 @@ function App() {
           <img src="img/svg/ods5.svg" alt="ODS3" style={{ width: "20%" }} />
         </div>
       </Container>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/results/" element={<Results />} />
-        </Routes>
-      </BrowserRouter>
-    </>
+      
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/results/" element={<Results />} />
+        <Route path="/training/" element={<Training />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

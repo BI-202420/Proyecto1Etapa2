@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Accordion, Form, Button, Modal, Spinner } from "react-bootstrap";
+import { Container, Accordion, Form, Button, Card, ListGroup, Modal, Spinner } from "react-bootstrap";
 import { FileUpload } from 'primereact/fileupload';
 import axios from "axios";
 import * as XLSX from 'xlsx';
@@ -8,8 +8,17 @@ import * as XLSX from 'xlsx';
 function Home() {
     const navigate = useNavigate();
     const [formFields, setFormFields] = useState([{ opinion: "" }]);
+    const [models, setModels] = useState([]);
+    const [model, setModel] = useState({});
     const [alert, setAlert] = useState({ show: false, message: "" });
     const [loading, setLoading] = useState(false);
+
+    function getModels() {
+        axios.get("http://localhost:8000/models")
+            .then(response => {setModels(response.data); setModel(response.data[0]);})
+            .catch(error => console.log(error));
+    }
+    useEffect(getModels, []);
 
     function handleOpinionChange(event) {
         const newFormFields = [...formFields];
@@ -51,7 +60,7 @@ function Home() {
             setAlert({ show: true, message: "Debes llenar todos los campos de texto." });
             return;
         }
-        const payload = {model: 1, opinions: formFields.map(field => ({opinion: field.opinion}))};
+        const payload = {model: model.name, opinions: formFields.map(field => ({opinion: field.opinion}))};
         sendRequest(payload);
     }
 
@@ -111,6 +120,41 @@ function Home() {
                         <Accordion.Header>Subir Archivo</Accordion.Header>
                         <Accordion.Body>
                             <FileUpload name="file" accept=".xlsx" customUpload uploadHandler={handleFileUpload} chooseLabel="Seleccionar archivo" uploadLabel="Subir" cancelLabel="Cancelar" emptyTemplate={<p className="m-0">Arrastra y suelta archivos aquí para subirlos</p>} />
+                        </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="2">
+                        <Accordion.Header>Modelo</Accordion.Header>
+                        <Accordion.Body>
+                            <div className="d-flex justify-content-between px-5 gap-5">
+                                <Form className="mb-3 w-100">
+                                    <Form.Group controlId="sourceModel">
+                                        <Form.Label>Modelo</Form.Label>
+                                        <Form.Select aria-label="Modelo fuente" value={model.source} onChange={(event)=>{setModel({...model, source: event.target.value})}}>
+                                            {models.map((model, index) => (
+                                                <option key={index} value={model.name}>{model.name}</option>
+                                            ))}
+                                        </Form.Select>
+                                        <Form.Text className="text-muted">
+                                            Selecciona el modelo que deseas utilizar.
+                                        </Form.Text>
+                                    </Form.Group>
+                                </Form>
+
+                                <Card style={{ width: '18rem' }}>
+                                    <div className="d-flex justify-content-center">
+                                        <Card.Img variant="top" src="img/svg/model.svg" style={{ width: "10rem" }} />
+                                    </div>
+                                    <Card.Body>
+                                        <Card.Title>{model.source}</Card.Title>
+                                        <p className="text-center">Métricas</p>
+                                        <ListGroup className="list-group-flush">
+                                            <ListGroup.Item>Precisión: {model.precision}</ListGroup.Item>
+                                            <ListGroup.Item>Recall: {model.recall}</ListGroup.Item>
+                                            <ListGroup.Item>F1 Score: {model.f1}</ListGroup.Item>
+                                        </ListGroup>
+                                    </Card.Body>
+                                </Card>
+                            </div>
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
