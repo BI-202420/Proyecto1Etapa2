@@ -1,0 +1,11 @@
+{
+  "models": {
+    "default": {
+      "precision": "0.98",
+      "recall": "0.98",
+      "f1": "0.98",
+      "source": null,
+      "filename": "default.pkl"
+    }
+  }
+}
